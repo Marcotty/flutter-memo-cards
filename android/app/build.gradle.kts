@@ -12,7 +12,7 @@ plugins {
 }
 
 android {
-    namespace = "marcotty.apps.flutter_memo_cards"
+    namespace = "marcotty.apps.memoCards"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "marcotty.apps.flutter_memo_cards"
+        applicationId = "marcotty.apps.memoCards"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

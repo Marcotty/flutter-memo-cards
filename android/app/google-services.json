@@ -7,12 +7,33 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:643524386263:android:b649dcfcd8cde193c3ff92",
+        "mobilesdk_app_id": "1:643524386263:android:2ac669139bdc41b2c3ff92",
         "android_client_info": {
-          "package_name": "com.example.flutter_memo_cards"
+          "package_name": "marcotty.apps.memoCards"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "643524386263-kntp9lr98g1hcaia6he1pfat5he34t6t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "marcotty.apps.memoCards",
+            "certificate_hash": "2c3d9ab4fc8c89f97891011c3856be725e53747c"
+          }
+        },
+        {
+          "client_id": "643524386263-rg3jfjhtb19d0rbn94t49ibmajnlkc1h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "marcotty.apps.memoCards",
+            "certificate_hash": "df61a1e0eb28c240b3abeb3e900566dabac2af65"
+          }
+        },
+        {
+          "client_id": "643524386263-jq5a8og58obvad8hl1qc1g150nbvt7fb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCt40WVo9K1Y-QPR8iLcDgCh_ykmwbOU-E"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "643524386263-jq5a8og58obvad8hl1qc1g150nbvt7fb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "643524386263-6vdisi12qre1bcssrf1g1b537dk8ocht.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterMemoCards"
+              }
+            }
+          ]
         }
       }
     }
