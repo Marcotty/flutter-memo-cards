@@ -207,7 +207,7 @@ class AuthGate extends StatelessWidget {
 
         // Otherwise, show your application's home screen
 
-        return const MyHomePage(); // Your app's main content
+        return const ThemesPage(); // Your app's main content
       },
     );
   }
