@@ -74,18 +74,14 @@ class MemoCardsApp extends StatelessWidget {
         // You can also adjust input field decorations
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-
           filled: true,
-
           fillColor: Colors.grey[200],
         ),
 
         // And other elements like text styles
         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Colors.black87),
-
           bodyMedium: TextStyle(color: Colors.black54),
-
           headlineSmall: TextStyle(color: Colors.deepPurple),
         ),
       ),
@@ -132,7 +128,6 @@ class MyHomePage extends StatelessWidget {
               onPressed: () {
                 FirebaseAuth.instance.signOut(); // Simple sign out
               },
-
               child: const Text('Sign Out'),
             ),
           ],
@@ -224,10 +219,8 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-
           children: [
             const Text('You are signed in!'),
-
             ElevatedButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut(); // Simple sign out

@@ -129,7 +129,6 @@ class CardsPage extends StatelessWidget {
                 _showEditCardDialog(context, vm, card); // Open edit dialog
               },
             ),
-
             ListTile(
               leading: const Icon(Icons.delete),
               title: const Text('Delete Card'),
