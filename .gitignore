@@ -61,3 +61,5 @@ Thumbs.db
 # IDE/Editor specific
 .vscode/
 *.swo
+
+.fake

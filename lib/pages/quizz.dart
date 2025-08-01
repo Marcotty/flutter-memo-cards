@@ -5,17 +5,17 @@ import 'package:flutter_memo_cards/models.dart';
 class QuizzPage extends StatefulWidget {
   final List<FullCard> cards;
 
-  const QuizzPage({Key? key, required this.cards}) : super(key: key);
+  const QuizzPage({super.key, required this.cards});
 
   @override
-  _QuizzPageState createState() => _QuizzPageState();
+  QuizzPageState createState() => QuizzPageState();
 }
 
-class _QuizzPageState extends State<QuizzPage> {
+class QuizzPageState extends State<QuizzPage> {
   late int _currentCardIndex;
-  Set<int> _knownCards = {};
-  Set<int> _notKnownCards = {};
-  Random _random = Random();
+  final Set<int> _knownCards = {};
+  final Set<int> _notKnownCards = {};
+  final Random _random = Random();
   bool _cardRevealed = false;
 
   @override

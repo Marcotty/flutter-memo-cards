@@ -10,7 +10,11 @@ class ThemesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = Provider.of<MemoViewModel>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Memo Cards')),
+      appBar: AppBar(
+        title: const Text('Memo Cards'),
+        actions : [
+        ],
+      ),
       body: ListView(
         children: vm.themes
             .map(
