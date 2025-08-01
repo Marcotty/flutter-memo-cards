@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_memo_cards/models.dart';
 
 class QuizzPage extends StatefulWidget {
-  final List<FullCard> cards;
+  final List<FullCardModel> cards;
 
   const QuizzPage({super.key, required this.cards});
 
@@ -83,12 +83,10 @@ class QuizzPageState extends State<QuizzPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Center(
-                      child: Flexible( // Use Flexible to allow text to wrap
-                        child: Text(
-                          _cardRevealed ? card.description : card.title,
-                          style: const TextStyle(fontSize: 20),
-                          textAlign: TextAlign.center,
-                        ),
+                      child: Text(
+                        _cardRevealed ? card.description : card.title,
+                        style: const TextStyle(fontSize: 20),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
