@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "643524386263",
+    "project_id": "memocards-37431",
+    "storage_bucket": "memocards-37431.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643524386263:android:b649dcfcd8cde193c3ff92",
+        "android_client_info": {
+          "package_name": "com.example.flutter_memo_cards"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt40WVo9K1Y-QPR8iLcDgCh_ykmwbOU-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
