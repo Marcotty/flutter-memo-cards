@@ -13,7 +13,10 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseUIAuth.configureProviders([
     EmailAuthProvider(),
-    GoogleProvider(clientId: '643524386263-jq5a8og58obvad8hl1qc1g150nbvt7fb.apps.googleusercontent.com'),
+    GoogleProvider(
+      clientId:
+          '643524386263-jq5a8og58obvad8hl1qc1g150nbvt7fb.apps.googleusercontent.com',
+    ),
   ]);
   runApp(
     ChangeNotifierProvider(
@@ -37,6 +40,53 @@ class MemoCardsApp extends StatelessWidget {
           backgroundColor: ColorScheme.fromSeed(
             seedColor: Colors.green,
           ).inversePrimary,
+        ),
+
+        // Primary color will affect many widgets, including default button colors
+        primarySwatch:
+            Colors.deepPurple, // Try a color that matches your brand!
+
+        // This targets ElevatedButtons specifically (often used by FirebaseUI)
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green, // Button background
+
+            foregroundColor: Colors.white, // Button text color
+
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                10,
+              ), // Rounded corners for buttons
+            ),
+
+            padding: const EdgeInsets.symmetric(
+              horizontal: 30,
+              vertical: 15,
+            ), // Button padding
+
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ), // Text style
+          ),
+        ),
+
+        // You can also adjust input field decorations
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+
+          filled: true,
+
+          fillColor: Colors.grey[200],
+        ),
+
+        // And other elements like text styles
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black87),
+
+          bodyMedium: TextStyle(color: Colors.black54),
+
+          headlineSmall: TextStyle(color: Colors.deepPurple),
         ),
       ),
       home: const AuthGate(),
@@ -78,7 +128,7 @@ class MyHomePage extends StatelessWidget {
               },
               child: const Text('Go to Themes'),
             ),
-           ElevatedButton(
+            ElevatedButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut(); // Simple sign out
               },
