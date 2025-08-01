@@ -12,7 +12,7 @@ plugins {
 }
 
 android {
-    namespace = "marcotty.apps.memoCards"
+    namespace = "marcotty.apps.memocards"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "marcotty.apps.memoCards"
+        applicationId = "marcotty.apps.memocards"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -63,11 +63,24 @@ android {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true // Typically enabled for release builds
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // ... other release build type configurations            
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            //signingConfig = signingConfigs.getByName("debug")
+        }
+        debug {
+            // Signing with the debug keys for now, so `flutter run --debug` works.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
+    /*   // Uncomment the following lines to enable product flavors.
+    flavorDimensions += "default"
+    productFlavors {
+        create("dev") {
+            dimension = "default"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
+        create("prod") {
+            dimension = "default"
+        }
+    }*/
 }
 
 flutter {

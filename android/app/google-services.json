@@ -7,25 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:643524386263:android:2ac669139bdc41b2c3ff92",
+        "mobilesdk_app_id": "1:643524386263:android:6c83274594debd10c3ff92",
         "android_client_info": {
-          "package_name": "marcotty.apps.memoCards"
+          "package_name": "marcotty.apps.memocards"
         }
       },
       "oauth_client": [
         {
-          "client_id": "643524386263-kntp9lr98g1hcaia6he1pfat5he34t6t.apps.googleusercontent.com",
+          "client_id": "643524386263-agjfnkl6qt82digq0nvltl7thul9rkgs.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "marcotty.apps.memoCards",
+            "package_name": "marcotty.apps.memocards",
             "certificate_hash": "2c3d9ab4fc8c89f97891011c3856be725e53747c"
           }
         },
         {
-          "client_id": "643524386263-rg3jfjhtb19d0rbn94t49ibmajnlkc1h.apps.googleusercontent.com",
+          "client_id": "643524386263-ce2nic4qjcdhenq284v1kcm183eeeir2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "marcotty.apps.memoCards",
+            "package_name": "marcotty.apps.memocards",
             "certificate_hash": "df61a1e0eb28c240b3abeb3e900566dabac2af65"
           }
         },

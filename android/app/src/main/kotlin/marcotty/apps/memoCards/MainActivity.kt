@@ -1,4 +1,4 @@
-package com.example.flutter_memo_cards
+package marcotty.apps.memocards
 
 import io.flutter.embedding.android.FlutterActivity
 
