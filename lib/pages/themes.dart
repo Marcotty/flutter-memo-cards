@@ -24,7 +24,7 @@ class ThemesPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Themes'), // Changed title for clarity
+        title: const Text('Themes'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -32,191 +32,205 @@ class ThemesPage extends StatelessWidget {
           ),
         ],
       ),
-      body: StreamBuilder<List<ThemeModel>>(
-        stream: vm.userThemesStream, // Listen to the real-time stream of themes
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            ); // Show loading indicator
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            ); // Show error message
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No themes yet! Tap the + button to add one.'),
-            ); // No data message
-          }
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            colors: [
+              Color.fromARGB(255, 221, 219, 224), // Light purple
+              Color.fromARGB(255, 105, 94, 126), // Medium purple
+            ],
+            radius: 10.0,
+            center: Alignment.topLeft,
+            //begin: Alignment.topLeft,
+            //end: Alignment.bottomRight,
+          ),
+        ),
+        child: StreamBuilder<List<ThemeModel>>(
+          stream: vm.userThemesStream, // Listen to the real-time stream of themes
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              ); // Show loading indicator
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              ); // Show error message
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text('No themes yet! Tap the + button to add one.'),
+              ); // No data message
+            }
 
-          final themes = snapshot.data!; // Your list of ThemeModel objects
-          return ListView.builder(
-            itemCount: themes.length,
-            itemBuilder: (context, index) {
-              final theme = themes[index]; // Get the ThemeModel
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Theme.of(context).cardColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color.fromARGB(255, 212, 211, 211)..withAlpha(0), // Adjust shadow color
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(
-                          0,
-                          3,
-                        ), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    trailing: const Icon(Icons.keyboard_arrow_right),
-                    title: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // First row: Theme name and card counter
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  theme.name,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+            final themes = snapshot.data!; // Your list of ThemeModel objects
+            return ListView.builder(
+              itemCount: themes.length,
+              itemBuilder: (context, index) {
+                final theme = themes[index]; // Get the ThemeModel
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: Theme.of(context).cardColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(255, 212, 211, 211)..withAlpha(0), // Adjust shadow color
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(
+                            0,
+                            3,
+                          ), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      trailing: const Icon(Icons.keyboard_arrow_right),
+                      title: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // First row: Theme name and card counter
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    theme.name,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.visible,
+                                    softWrap: true,
                                   ),
-                                  overflow: TextOverflow.visible,
-                                  softWrap: true,
                                 ),
-                              ),
-                              StreamBuilder<int>(
-                                stream: vm.getCardCountForThemeStream(theme.id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const SizedBox(
-                                      width: 40,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
+                                StreamBuilder<int>(
+                                  stream: vm.getCardCountForThemeStream(theme.id),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const SizedBox(
+                                        width: 40,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      );
+                                    }
+                                    if (snapshot.hasError) {
+                                      return const Text(
+                                        'Error',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                    return Text(
+                                      '${snapshot.data ?? 0} cards',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.blue,
                                       ),
                                     );
-                                  }
-                                  if (snapshot.hasError) {
-                                    return const Text(
-                                      'Error',
-                                      style: TextStyle(
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            // Second row: known and unknown counts
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                StreamBuilder<int>(
+                                  stream: vm.getKnownCardCountForThemeStream(theme.id),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const SizedBox(
+                                        width: 40,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      );
+                                    }
+                                    if (snapshot.hasError) {
+                                      return const Text(
+                                        'Error',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                    return Text(
+                                      '${snapshot.data ?? 0} known',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.green,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                StreamBuilder<int>(
+                                  stream: vm.getNotKnownCardCountForThemeStream(theme.id),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const SizedBox(
+                                        width: 40,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      );
+                                    }
+                                    if (snapshot.hasError) {
+                                      return const Text(
+                                        'Error',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                    return Text(
+                                      '${snapshot.data ?? 0} unknown',
+                                      style: const TextStyle(
                                         fontSize: 12,
                                         color: Colors.red,
                                       ),
                                     );
-                                  }
-                                  return Text(
-                                    '${snapshot.data ?? 0} cards',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.blue,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          // Second row: known and unknown counts
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              StreamBuilder<int>(
-                                stream: vm.getKnownCardCountForThemeStream(theme.id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const SizedBox(
-                                      width: 40,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    );
-                                  }
-                                  if (snapshot.hasError) {
-                                    return const Text(
-                                      'Error',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                  return Text(
-                                    '${snapshot.data ?? 0} known',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.green,
-                                    ),
-                                  );
-                                },
-                              ),
-                              StreamBuilder<int>(
-                                stream: vm.getNotKnownCardCountForThemeStream(theme.id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const SizedBox(
-                                      width: 40,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    );
-                                  }
-                                  if (snapshot.hasError) {
-                                    return const Text(
-                                      'Error',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                  return Text(
-                                    '${snapshot.data ?? 0} unknown',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    onLongPress: () {
-                      _showThemeOptionsBottomSheet(context, vm, theme);
-                    },
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            CardsPage(themeId: theme.id, themeName: theme.name),
+                      onLongPress: () {
+                        _showThemeOptionsBottomSheet(context, vm, theme);
+                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              CardsPage(themeId: theme.id, themeName: theme.name),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>

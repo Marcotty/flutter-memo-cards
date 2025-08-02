@@ -35,12 +35,19 @@ class MemoCardsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Memo Cards',
+      themeAnimationStyle: AnimationStyle(
+      curve: Curves.easeInOut,
+      duration: const Duration(milliseconds: 400),
+      reverseDuration: const Duration(milliseconds: 300),
+    ),
+      themeMode: ThemeMode.system,
+      darkTheme: ThemeData.dark(useMaterial3: true),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
         appBarTheme: AppBarTheme(
           backgroundColor: ColorScheme.fromSeed(
-            seedColor: Colors.green,
+            seedColor: const Color.fromARGB(255, 109, 111, 109),
           ).inversePrimary,
         ),
         // Primary color will affect many widgets, including default button colors
