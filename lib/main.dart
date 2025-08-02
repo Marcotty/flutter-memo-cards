@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_memo_cards/l10n/app_localizations.dart';
 import 'firebase_options.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'viewmodels.dart';
@@ -41,7 +43,6 @@ class MemoCardsApp extends StatelessWidget {
             seedColor: Colors.green,
           ).inversePrimary,
         ),
-
         // Primary color will affect many widgets, including default button colors
         primarySwatch:
             Colors.deepPurple, // Try a color that matches your brand!
@@ -85,6 +86,13 @@ class MemoCardsApp extends StatelessWidget {
           headlineSmall: TextStyle(color: Colors.deepPurple),
         ),
       ),
+      localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          // Add your generated delegate here later
+        ],
+
       home: const AuthGate(),
     );
   }
@@ -120,7 +128,7 @@ class AuthGate extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 16),
 
                   child: Text(
-                    'By signing in, you agree to our terms and conditions.',
+                    AppLocalizations.of(context)!.signInFooter,
 
                     style: TextStyle(color: Colors.grey[600]),
                   ),
@@ -158,11 +166,8 @@ class AuthGate extends StatelessWidget {
               }),
             ],
           );
-          // This is the magic!
         }
-
         // Otherwise, show your application's home screen
-
         return const ThemesPage(); // Your app's main content
       },
     );

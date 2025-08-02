@@ -63,3 +63,6 @@ Thumbs.db
 *.swo
 
 .fake
+lib/l10n/app_localizations_en.dart
+lib/l10n/app_localizations_fr.dart
+lib/l10n/app_localizations.dart
