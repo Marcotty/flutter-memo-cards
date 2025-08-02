@@ -90,53 +90,6 @@ class MemoCardsApp extends StatelessWidget {
   }
 }
 
-//responsible for login/register
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.brightness_4), // Use a theme-related icon
-            tooltip: 'Toggle Theme',
-            onPressed: () {
-              // Implement theme change logic here
-              // Example:
-              // Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ThemesPage()),
-                );
-              },
-              child: const Text('Go to Themes'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut(); // Simple sign out
-              },
-              child: const Text('Sign Out'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
@@ -176,6 +129,14 @@ class AuthGate extends StatelessWidget {
             },
 
             actions: [
+              AuthStateChangeAction<UserCreated>((context, state) 
+              {
+                // User just created an account, navigate to home screen
+                if (state.credential?.additionalUserInfo?.isNewUser == true) {
+                  final vm = Provider.of<MemoViewModel>(context, listen: false);
+                  vm.addDefaultThemesWithCards();
+                }
+              }),
               AuthStateChangeAction<SignedIn>((context, state) {
                 // User just signed in, navigate to home screen
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -183,9 +144,9 @@ class AuthGate extends StatelessWidget {
                     content: Text('Welcome, ${state.user?.displayName}!'),
                   ),
                 );
-                //Navigator.pushReplacementNamed(context, '/home');
+                  //Navigator.pushReplacementNamed(context, '/home');
               }),
-
+              
               AuthStateChangeAction<AuthFailed>((context, state) {
                 // Handle specific authentication failures
 
@@ -204,33 +165,6 @@ class AuthGate extends StatelessWidget {
 
         return const ThemesPage(); // Your app's main content
       },
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Welcome!')),
-
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('You are signed in!'),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut(); // Simple sign out
-              },
-
-              child: const Text('Sign Out'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_memo_cards/pages/cards.dart';
 import 'package:provider/provider.dart';
@@ -23,22 +24,31 @@ class ThemesPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Memo Themes'), // Changed title for clarity
+        title: const Text('Themes'), // Changed title for clarity
         actions: [
-          // You can add other actions here if needed
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => FirebaseAuth.instance.signOut(),
+          ),
         ],
       ),
       body: StreamBuilder<List<ThemeModel>>(
         stream: vm.userThemesStream, // Listen to the real-time stream of themes
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator()); // Show loading indicator
+            return const Center(
+              child: CircularProgressIndicator(),
+            ); // Show loading indicator
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}')); // Show error message
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            ); // Show error message
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No themes yet! Tap the + button to add one.')); // No data message
+            return const Center(
+              child: Text('No themes yet! Tap the + button to add one.'),
+            ); // No data message
           }
 
           final themes = snapshot.data!; // Your list of ThemeModel objects
@@ -54,26 +64,153 @@ class ThemesPage extends StatelessWidget {
                     color: Theme.of(context).cardColor,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5), // Use withOpacity instead of withValues
+                        color: Colors.grey.withOpacity(
+                          0.5,
+                        ), // Use withOpacity instead of withValues
                         spreadRadius: 2,
                         blurRadius: 5,
-                        offset: const Offset(0, 3), // changes position of shadow
+                        offset: const Offset(
+                          0,
+                          3,
+                        ), // changes position of shadow
                       ),
                     ],
                   ),
                   child: ListTile(
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    title: Center(child: Text(theme.name)), // Access theme.name
+                    trailing: const Icon(Icons.keyboard_arrow_right),
+                    title: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // First row: Theme name and card counter
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  theme.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.visible,
+                                  softWrap: true,
+                                ),
+                              ),
+                              StreamBuilder<int>(
+                                stream: vm.getCardCountForThemeStream(theme.id),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const SizedBox(
+                                      width: 40,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  }
+                                  if (snapshot.hasError) {
+                                    return const Text(
+                                      'Error',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                  return Text(
+                                    '${snapshot.data ?? 0} cards',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.blue,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          // Second row: known and unknown counts
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              StreamBuilder<int>(
+                                stream: vm.getKnownCardCountForThemeStream(theme.id),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const SizedBox(
+                                      width: 40,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  }
+                                  if (snapshot.hasError) {
+                                    return const Text(
+                                      'Error',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                  return Text(
+                                    '${snapshot.data ?? 0} known',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.green,
+                                    ),
+                                  );
+                                },
+                              ),
+                              StreamBuilder<int>(
+                                stream: vm.getNotKnownCardCountForThemeStream(theme.id),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const SizedBox(
+                                      width: 40,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  }
+                                  if (snapshot.hasError) {
+                                    return const Text(
+                                      'Error',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                  return Text(
+                                    '${snapshot.data ?? 0} unknown',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                     onLongPress: () {
-                      _showThemeOptionsBottomSheet(context, vm, theme); // Pass ThemeModel
+                      _showThemeOptionsBottomSheet(context, vm, theme);
                     },
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CardsPage( // Navigate to the cards page
-                          themeId: theme.id, // Pass the Firestore ID
-                          themeName: theme.name, // Pass the name for display
-                        ),
+                        builder: (_) =>
+                            CardsPage(themeId: theme.id, themeName: theme.name),
                       ),
                     ),
                   ),
@@ -84,7 +221,8 @@ class ThemesPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddThemeDialog(context, vm), // Use dialog for adding
+        onPressed: () =>
+            _showAddThemeDialog(context, vm), // Use dialog for adding
         child: const Icon(Icons.add),
       ),
     );
@@ -92,7 +230,11 @@ class ThemesPage extends StatelessWidget {
 
   // --- Helper Methods for Dialogs and Bottom Sheet ---
 
-  void _showThemeOptionsBottomSheet(BuildContext context, MemoViewModel vm, ThemeModel theme) {
+  void _showThemeOptionsBottomSheet(
+    BuildContext context,
+    MemoViewModel vm,
+    ThemeModel theme,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -114,7 +256,11 @@ class ThemesPage extends StatelessWidget {
               title: const Text('Delete Theme'),
               onTap: () {
                 Navigator.pop(context); // Close bottom sheet
-                _showDeleteConfirmationDialog(context, vm, theme); // Open delete dialog
+                _showDeleteConfirmationDialog(
+                  context,
+                  vm,
+                  theme,
+                ); // Open delete dialog
               },
             ),
           ],
@@ -132,7 +278,9 @@ class ThemesPage extends StatelessWidget {
           title: const Text('Add New Theme'),
           content: TextField(
             controller: themeController,
-            decoration: const InputDecoration(labelText: 'Theme Name'), // Changed to labelText
+            decoration: const InputDecoration(
+              labelText: 'Theme Name',
+            ), // Changed to labelText
           ),
           actions: [
             TextButton(
@@ -140,19 +288,27 @@ class ThemesPage extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () async { // Made async for Snackbar
+              onPressed: () async {
+                // Made async for Snackbar
                 if (themeController.text.isNotEmpty) {
                   await vm.addTheme(themeController.text);
-                  if (context.mounted) { // Check context before popping
-                     Navigator.pop(context);
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(content: Text('Theme "${themeController.text}" added successfully!')),
-                     );
+                  if (context.mounted) {
+                    // Check context before popping
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Theme "${themeController.text}" added successfully!',
+                        ),
+                      ),
+                    );
                   }
                 } else {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Theme name cannot be empty')),
+                      const SnackBar(
+                        content: Text('Theme name cannot be empty'),
+                      ),
                     );
                   }
                 }
@@ -165,8 +321,14 @@ class ThemesPage extends StatelessWidget {
     );
   }
 
-  void _showEditThemeDialog(BuildContext context, MemoViewModel vm, ThemeModel theme) {
-    TextEditingController themeController = TextEditingController(text: theme.name);
+  void _showEditThemeDialog(
+    BuildContext context,
+    MemoViewModel vm,
+    ThemeModel theme,
+  ) {
+    TextEditingController themeController = TextEditingController(
+      text: theme.name,
+    );
     showDialog(
       context: context,
       builder: (context) {
@@ -174,7 +336,9 @@ class ThemesPage extends StatelessWidget {
           title: const Text('Edit Theme Name'),
           content: TextField(
             controller: themeController,
-            decoration: InputDecoration(labelText: theme.name), // Show current name as label
+            decoration: InputDecoration(
+              labelText: theme.name,
+            ), // Show current name as label
           ),
           actions: [
             TextButton(
@@ -182,23 +346,31 @@ class ThemesPage extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () async { // Made async for Snackbar
+              onPressed: () async {
+                // Made async for Snackbar
                 final newName = themeController.text;
                 if (newName.isNotEmpty && newName != theme.name) {
                   await vm.editTheme(theme, newName); // Pass ThemeModel
                   if (context.mounted) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Theme "${theme.name}" updated to "$newName" successfully!')),
+                      SnackBar(
+                        content: Text(
+                          'Theme "${theme.name}" updated to "$newName" successfully!',
+                        ),
+                      ),
                     );
                   }
                 } else if (newName.isEmpty) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Theme name cannot be empty')),
+                      const SnackBar(
+                        content: Text('Theme name cannot be empty'),
+                      ),
                     );
                   }
-                } else { // Name is same or empty, nothing to do
+                } else {
+                  // Name is same or empty, nothing to do
                   if (context.mounted) {
                     Navigator.pop(context); // Just close the dialog
                   }
@@ -212,30 +384,44 @@ class ThemesPage extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, MemoViewModel vm, ThemeModel theme) {
+  void _showDeleteConfirmationDialog(
+    BuildContext context,
+    MemoViewModel vm,
+    ThemeModel theme,
+  ) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Delete Theme?'),
-          content: Text('Are you sure you want to delete the theme "${theme.name}"? All cards within this theme will also be deleted.'),
+          content: Text(
+            'Are you sure you want to delete the theme "${theme.name}"? All cards within this theme will also be deleted.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () async { // Made async for Snackbar
+              onPressed: () async {
+                // Made async for Snackbar
                 await vm.removeTheme(theme); // Pass ThemeModel
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Theme "${theme.name}" deleted successfully!')),
+                    SnackBar(
+                      content: Text(
+                        'Theme "${theme.name}" deleted successfully!',
+                      ),
+                    ),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('Delete', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );

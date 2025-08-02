@@ -1,17 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum CardFilter { known, unknown, all }
+
 class FullCardModel {
   final String id; // Document ID from Firestore
   final String themeId; // The ID of the parent theme
-  final String title;
-  final String description;
+  final String subject;
+  final String answer;
+  final bool isKnown; // Optional: to track if the card is known
   final String? userId; // To easily associate with the user
 
   FullCardModel({
     required this.id,
     required this.themeId,
-    required this.title,
-    required this.description,
+    required this.subject,
+    required this.answer,
+    required this.isKnown,
     this.userId,
   });
 
@@ -20,8 +24,9 @@ class FullCardModel {
     return FullCardModel(
       id: doc.id,
       themeId: data['themeId'] ?? '', // Make sure this is stored in Firestore
-      title: data['title'] ?? '',
-      description: data['description'] ?? '',
+      subject: data['subject'] ?? '',
+      answer: data['answer'] ?? '',
+      isKnown: data['isKnown'] ?? false, // Optional field
       userId: data['userId'],
     );
   }
@@ -30,8 +35,9 @@ class FullCardModel {
     // When writing, we don't include 'id' as it's the document ID
     return {
       'themeId': themeId,
-      'title': title,
-      'description': description,
+      'subject': subject,
+      'answer': answer,
+      'isKnown': isKnown, // Optional: only if you want to track known status
       'userId': userId,
       'createdAt':
           FieldValue.serverTimestamp(), // Optional: for ordering/tracking
@@ -42,15 +48,17 @@ class FullCardModel {
   FullCardModel copyWith({
     String? id,
     String? themeId,
-    String? title,
-    String? description,
+    String? subject,
+    String? answer,
+    bool? isKnown,
     String? userId,
   }) {
     return FullCardModel(
       id: id ?? this.id,
       themeId: themeId ?? this.themeId,
-      title: title ?? this.title,
-      description: description ?? this.description,
+      subject: subject ?? this.subject,
+      answer: answer ?? this.answer,
+      isKnown: isKnown ?? this.isKnown,
       userId: userId ?? this.userId,
     );
   }

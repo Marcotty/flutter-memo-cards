@@ -5,15 +5,13 @@ import '../models.dart';
 import 'quizz.dart';
 
 class CardsPage extends StatelessWidget {
-  // We now pass themeId and themeName from ThemeListScreen
   final String themeId;
-  final String themeName; // Used for the AppBar title
+  final String themeName;
   const CardsPage({super.key, required this.themeId, required this.themeName});
 
   @override
   Widget build(BuildContext context) {
     final vm = Provider.of<MemoViewModel>(context);
-    // Check if a user is logged in
     if (vm.currentUserId == null) {
       return Scaffold(
         appBar: AppBar(title: Text(themeName)),
@@ -22,76 +20,311 @@ class CardsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(themeName), // Display the theme name
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 50.0),
-            child: StreamBuilder<List<FullCardModel>>(
-              stream: vm.cardsForThemeStream(
-                themeId,
-              ), // Stream the cards for the Quiz button
-              builder: (context, snapshot) {
-                final cardsForQuiz = snapshot.data ?? [];
-                return IconButton(
-                  icon: const Icon(Icons.quiz),
-                  tooltip: 'Start Quiz',
-                  // Only enable the quiz button if there are cards
-                  onPressed: cardsForQuiz.isNotEmpty
-                      ? () {
-                          // Navigate to quiz page, passing the actual FullCardModel list
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  QuizzPage(cards: cardsForQuiz),
-                            ),
-                          );
-                        }
-                      : null, // Disable button
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-
+      appBar: AppBar(title: Text(themeName)),
       body: StreamBuilder<List<FullCardModel>>(
-        stream: vm.cardsForThemeStream(
-          themeId,
-        ), // Listen to the real-time stream of cards
+        stream: vm.cardsForThemeStream(themeId),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            ); // Show loading
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            ); // Show error
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No cards in this theme yet! Add one.'),
-            ); // No data message
-          }
-          final cards = snapshot.data!; // Your list of FullCardModel objects
-          return ListView.builder(
-            itemCount: cards.length,
-            itemBuilder: (context, index) {
-              final card = cards[index]; // Get the FullCardModel
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  title: Text(card.title),
-                  subtitle: Text(card.description),
-                  onLongPress: () {
-                    _showCardOptionsBottomSheet(
+          final allCards = snapshot.data ?? [];
+
+          return ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              const SizedBox(height: 64),
+              // All Cards Card
+              Card(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
                       context,
-                      vm,
-                      card,
-                    ); // Pass FullCardModel
+                      MaterialPageRoute(
+                        builder: (_) => ListCardsScreen(
+                          themeId: themeId,
+                          filter: CardFilter.all,
+                          title: 'List the ${allCards.length} cards',
+                        ),
+                      ),
+                    );
+                  },
+                  child: SizedBox(
+                    height: 72,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${allCards.length}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Text(
+                            ' Cards',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Known and Unknown Cards Row
+              Row(
+                children: [
+                  Expanded(
+                    child: Card(
+                      child: SizedBox(
+                        height: 72,
+                        child: ListTile(
+                          title: const Text('Known Cards'),
+                          trailing: StreamBuilder<int>(
+                            stream: vm.getKnownCardCountForThemeStream(themeId),
+                            builder: (context, snapshot) {
+                              final count = snapshot.data ?? 0;
+                              return Text(
+                                '$count',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            },
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ListCardsScreen(
+                                  themeId: themeId,
+                                  filter: CardFilter.known,
+                                  title: 'Known Cards',
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Card(
+                      child: SizedBox(
+                        height: 72,
+                        child: ListTile(
+                          title: const Text('Unknown Cards'),
+                          trailing: StreamBuilder<int>(
+                            stream: vm.getNotKnownCardCountForThemeStream(themeId),
+                            builder: (context, snapshot) {
+                              final count = snapshot.data ?? 0;
+                              return Text(
+                                '$count',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.deepPurpleAccent,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            },
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ListCardsScreen(
+                                  themeId: themeId,
+                                  filter: CardFilter.unknown,
+                                  title: 'Unknown Cards',
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 64),
+              // Start Quiz Card
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                elevation: 4.0,
+                child: SizedBox(
+                  height: 144,
+                  child: ListTile(
+                    title: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Start Quizz'),
+                          const SizedBox(width: 16),
+                          const Icon(Icons.quiz),
+                        ],
+                      ),
+                    ),
+                    minTileHeight: 60,
+                    textColor: Colors.deepPurpleAccent,
+                    onTap: allCards.isNotEmpty
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => QuizzPage(cards: allCards),
+                              ),
+                            );
+                          }
+                        : null,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ListCardsScreen widget
+class ListCardsScreen extends StatelessWidget {
+  final String themeId;
+  final CardFilter filter;
+  final String title;
+  const ListCardsScreen({super.key, required this.themeId, required this.filter, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = Provider.of<MemoViewModel>(context, listen: false);
+
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: StreamBuilder<List<FullCardModel>>(
+        stream: vm.cardsForThemeStream(themeId),
+        builder: (context, snapshot) {
+          final cards = snapshot.data ?? [];
+          final filteredCards = filter == CardFilter.known
+              ? cards.where((c) => c.isKnown).toList()
+              : filter == CardFilter.unknown
+                  ? cards.where((c) => !c.isKnown).toList()
+                  : cards;
+          if (filteredCards.isEmpty) {
+            return const Center(child: Text('No cards to show.'));
+          }
+          return ListView.builder(
+            itemCount: filteredCards.length,
+            itemBuilder: (context, index) {
+              final card = filteredCards[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListTile(
+                  title: Text(card.subject),
+                  subtitle: Text(card.answer),
+                  trailing: card.isKnown
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : const Icon(Icons.close, color: Colors.red),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        final subjectController = TextEditingController(text: card.subject);
+                        final answerController = TextEditingController(text: card.answer);
+                        return AlertDialog(
+                          title: const Text('Card Options'),
+                          content: SizedBox(
+                            width: double.maxFinite,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.edit),
+                                  title: const Text('Edit'),
+                                  onTap: () {
+                                    Navigator.pop(context); // Close options dialog
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => Drawer(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 32),
+                                              const Text('Edit Card', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                              const SizedBox(height: 16),
+                                              TextField(
+                                                controller: subjectController,
+                                                decoration: const InputDecoration(labelText: 'Subject'),
+                                              ),
+                                              const SizedBox(height: 16),
+                                              TextField(
+                                                controller: answerController,
+                                                decoration: const InputDecoration(labelText: 'Answer'),
+                                              ),
+                                              const Spacer(),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: ElevatedButton(
+                                                      onPressed: () async {
+                                                        await vm.editCard(
+                                                          card,
+                                                          subjectController.text,
+                                                          answerController.text,
+                                                        );
+                                                        Navigator.pop(context); // Close drawer
+                                                      },
+                                                      child: const Text('Save'),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 16),
+                                                  Expanded(
+                                                    child: OutlinedButton(
+                                                      onPressed: () => Navigator.pop(context),
+                                                      child: const Text('Cancel'),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.delete),
+                                  title: const Text('Delete'),
+                                  onTap: () async {
+                                    Navigator.pop(context); // Close options dialog
+                                    await vm.removeCard(card);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Card deleted')),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                 ),
               );
@@ -99,61 +332,18 @@ class CardsPage extends StatelessWidget {
           );
         },
       ),
-
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            _showAddCardDialog(context, vm, themeId), // Use dialog for adding
+        onPressed: () {
+          _showAddCardDialog(context, vm, themeId, filter == CardFilter.known ? true : false);
+        },
         child: const Icon(Icons.add),
       ),
     );
   }
-  // --- Helper Methods for Dialogs and Bottom Sheet ---
-  void _showCardOptionsBottomSheet(
-    BuildContext context,
-    MemoViewModel vm,
-    FullCardModel card,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      enableDrag: true,
-      elevation: 10.0,
-      builder: (context) {
-        return Wrap(
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Edit Card'),
-              onTap: () {
-                Navigator.pop(context); // Close bottom sheet
-                _showEditCardDialog(context, vm, card); // Open edit dialog
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Delete Card'),
-              onTap: () {
-                Navigator.pop(context); // Close bottom sheet
-                _showDeleteConfirmationDialog(
-                  context,
-                  vm,
-                  card,
-                ); // Open delete dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
-  void _showAddCardDialog(
-    BuildContext context,
-    MemoViewModel vm,
-    String themeId,
-  ) {
-    TextEditingController titleController = TextEditingController();
-    TextEditingController descriptionController = TextEditingController();
+  void _showAddCardDialog(BuildContext context, MemoViewModel vm, String themeId, bool isKnown) {
+    final subjectController = TextEditingController();
+    final answerController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) {
@@ -163,190 +353,40 @@ class CardsPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'Card Title'),
+                controller: subjectController,
+                decoration: const InputDecoration(labelText: 'Subject'),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Card Description',
-                ),
-                maxLines: 3,
+                controller: answerController,
+                decoration: const InputDecoration(labelText: 'Answer'),
               ),
             ],
           ),
-
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
-
             ElevatedButton(
               onPressed: () async {
-                if (titleController.text.isNotEmpty &&
-                    descriptionController.text.isNotEmpty) {
-                  await vm.addCard(
-                    themeId,
-                    titleController.text,
-                    descriptionController.text,
-                  );
-
+                if (subjectController.text.isNotEmpty && answerController.text.isNotEmpty) {
+                  await vm.addCard(themeId, subjectController.text, answerController.text, isKnown);
                   if (context.mounted) {
                     Navigator.pop(context);
-
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Card "${titleController.text}" added successfully!',
-                        ),
-                      ),
+                      SnackBar(content: Text('Card added!')),
                     );
                   }
                 } else {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Card details cannot be empty'),
-                      ),
+                      const SnackBar(content: Text('Subject and answer cannot be empty')),
                     );
                   }
                 }
               },
-
               child: const Text('Add Card'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showEditCardDialog(
-    BuildContext context,
-    MemoViewModel vm,
-    FullCardModel card,
-  ) {
-    TextEditingController titleController = TextEditingController(
-      text: card.title,
-    );
-    TextEditingController descriptionController = TextEditingController(
-      text: card.description,
-    );
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Edit Card'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'Card Title'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Card Description',
-                ),
-                maxLines: 3,
-              ),
-            ],
-          ),
-
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-
-            ElevatedButton(
-              onPressed: () async {
-                final newTitle = titleController.text;
-                final newDescription = descriptionController.text;
-                if (newTitle.isNotEmpty &&
-                    newDescription.isNotEmpty &&
-                    (newTitle != card.title ||
-                        newDescription != card.description)) {
-                  await vm.editCard(card, newTitle, newDescription);
-                  if (context.mounted) {
-                    Navigator.pop(context);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Card "${card.title}" updated to "$newTitle" successfully!',
-                        ),
-                      ),
-                    );
-                  }
-                } else if (newTitle.isEmpty || newDescription.isEmpty) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Card details cannot be empty'),
-                      ),
-                    );
-                  }
-                } else {
-                  // No changes or empty, just close
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                }
-              },
-              child: const Text('Save Changes'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showDeleteConfirmationDialog(
-    BuildContext context,
-    MemoViewModel vm,
-    FullCardModel card,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete Card?'),
-          content: Text(
-            'Are you sure you want to delete the card "${card.title}"?',
-          ),
-
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-
-            ElevatedButton(
-              onPressed: () async {
-                await vm.removeCard(card);
-
-                if (context.mounted) {
-                  Navigator.pop(context);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Card "${card.title}" deleted successfully!',
-                      ),
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text(
-                'Delete',
-                style: TextStyle(color: Colors.white),
-              ),
             ),
           ],
         );
