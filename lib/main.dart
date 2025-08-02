@@ -86,13 +86,8 @@ class MemoCardsApp extends StatelessWidget {
           headlineSmall: TextStyle(color: Colors.deepPurple),
         ),
       ),
-      localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          // Add your generated delegate here later
-        ],
-
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: const AuthGate(),
     );
   }
