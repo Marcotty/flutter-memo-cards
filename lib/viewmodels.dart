@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' hide Theme;
+import 'package:logger/logger.dart';
 import 'models.dart';
 
 class MemoViewModel extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Logger logger = Logger();
   // No more in-memory lists or maps! Data comes directly from Firestore via streams.
   // The constructor no longer initializes default data.
   // Helper to get the current user's ID
@@ -92,11 +94,11 @@ class MemoViewModel extends ChangeNotifier {
   void setCardKnown(String themeId, String cardId, bool isKnown) {
     final userId = currentUserId;
     if (userId == null) {
-      print("Error: User not signed in. Cannot update card known status.");
+      logger.e("Error: User not signed in. Cannot update card known status.");
       return;
     }
     final payload = {'isKnown': isKnown};
-    print("Firestore update payload: $payload");
+    logger.d("LOGGER DEBUG : Firestore update payload: $payload");
     _firestore
       .collection('users')
       .doc(userId)
@@ -112,7 +114,7 @@ class MemoViewModel extends ChangeNotifier {
     final userId = currentUserId;
     if (userId == null) {
       // In a real app, you might throw an error, navigate to login, or show a message.
-      print("Error: User not signed in. Cannot add theme.");
+      logger.e("Error: User not signed in. Cannot add theme.");
       return;
     }
 
@@ -132,13 +134,13 @@ class MemoViewModel extends ChangeNotifier {
   Future<void> editTheme(ThemeModel themeToEdit, String newName) async {
     final userId = currentUserId;
     if (userId == null) {
-      print("Error: User not signed in. Cannot edit theme.");
+      logger.e("Error: User not signed in. Cannot edit theme.");
       return;
     }
 
     // Ensure the theme belongs to the current user (Firestore rules will also enforce this)
     if (themeToEdit.userId != userId) {
-      print("Error: Unauthorized attempt to edit theme.");
+      logger.e("Error: Unauthorized attempt to edit theme.");
       return;
     }
 
@@ -154,12 +156,12 @@ class MemoViewModel extends ChangeNotifier {
   Future<void> removeTheme(ThemeModel themeToRemove) async {
     final userId = currentUserId;
     if (userId == null) {
-      print("Error: User not signed in. Cannot remove theme.");
+      logger.e("Error: User not signed in. Cannot remove theme.");
       return;
     }
 
     if (themeToRemove.userId != userId) {
-      print("Error: Unauthorized attempt to remove theme.");
+      logger.e("Error: Unauthorized attempt to remove theme.");
       return;
     }
 
@@ -216,7 +218,7 @@ class MemoViewModel extends ChangeNotifier {
   Future<void> addCard(String themeId, String subject, String answer, bool isKnown) async {
     final userId = currentUserId;
     if (userId == null) {
-      print("Error: User not signed in. Cannot add card.");
+      logger.e("Error: User not signed in. Cannot add card.");
       return;
     }
 
@@ -246,12 +248,12 @@ class MemoViewModel extends ChangeNotifier {
   ) async {
     final userId = currentUserId;
     if (userId == null) {
-      print("Error: User not signed in. Cannot edit card.");
+      logger.e("Error: User not signed in. Cannot edit card.");
       return;
     }
 
     if (cardToEdit.userId != userId) {
-      print("Error: Unauthorized attempt to edit card.");
+      logger.e("Error: Unauthorized attempt to edit card.");
       return;
     }
 
@@ -269,12 +271,12 @@ class MemoViewModel extends ChangeNotifier {
   Future<void> removeCard(FullCardModel cardToRemove) async {
     final userId = currentUserId;
     if (userId == null) {
-      print("Error: User not signed in. Cannot remove card.");
+      logger.e("Error: User not signed in. Cannot remove card.");
       return;
     }
 
     if (cardToRemove.userId != userId) {
-      print("Error: Unauthorized attempt to remove card.");
+      logger.e("Error: Unauthorized attempt to remove card.");
       return;
     }
 
@@ -291,7 +293,7 @@ class MemoViewModel extends ChangeNotifier {
   Future<void> addDefaultThemesWithCards() async {
     final userId = currentUserId;
     if (userId == null) {
-      print("Error: User not signed in. Cannot add default themes.");
+      logger.e("Error: User not signed in. Cannot add default themes.");
       return;
     }
 
