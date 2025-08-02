@@ -239,87 +239,49 @@ class ListCardsScreen extends StatelessWidget {
                         final subjectController = TextEditingController(text: card.subject);
                         final answerController = TextEditingController(text: card.answer);
                         return AlertDialog(
-                          title: const Text('Card Options'),
-                          content: SizedBox(
-                            width: double.maxFinite,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListTile(
-                                  leading: const Icon(Icons.edit),
-                                  title: const Text('Edit'),
-                                  onTap: () {
-                                    Navigator.pop(context); // Close options dialog
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => Drawer(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              const SizedBox(height: 32),
-                                              const Text('Edit Card', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                                              const SizedBox(height: 16),
-                                              TextField(
-                                                controller: subjectController,
-                                                decoration: const InputDecoration(labelText: 'Subject'),
-                                              ),
-                                              const SizedBox(height: 16),
-                                              TextField(
-                                                controller: answerController,
-                                                decoration: const InputDecoration(labelText: 'Answer'),
-                                              ),
-                                              const Spacer(),
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: ElevatedButton(
-                                                      onPressed: () async {
-                                                        await vm.editCard(
-                                                          card,
-                                                          subjectController.text,
-                                                          answerController.text,
-                                                        );
-                                                        Navigator.pop(context); // Close drawer
-                                                      },
-                                                      child: const Text('Save'),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 16),
-                                                  Expanded(
-                                                    child: OutlinedButton(
-                                                      onPressed: () => Navigator.pop(context),
-                                                      child: const Text('Cancel'),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.delete),
-                                  title: const Text('Delete'),
-                                  onTap: () async {
-                                    Navigator.pop(context); // Close options dialog
-                                    await vm.removeCard(card);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Card deleted')),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
+                          title: const Text('Edit Card'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                controller: subjectController,
+                                decoration: const InputDecoration(labelText: 'Subject'),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: answerController,
+                                decoration: const InputDecoration(labelText: 'Answer'),
+                              ),
+                            ],
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: const Text('Close'),
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (subjectController.text.isNotEmpty && answerController.text.isNotEmpty) {
+                                  await vm.editCard(
+                                    card,
+                                    subjectController.text,
+                                    answerController.text,
+                                  );
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Card updated!')),
+                                    );
+                                  }
+                                } else {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Subject and answer cannot be empty')),
+                                    );
+                                  }
+                                }
+                              },
+                              child: const Text('Save'),
                             ),
                           ],
                         );
@@ -375,7 +337,7 @@ class ListCardsScreen extends StatelessWidget {
                   if (context.mounted) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Card added!')),
+                      const SnackBar(content: Text('Card added!')),
                     );
                   }
                 } else {

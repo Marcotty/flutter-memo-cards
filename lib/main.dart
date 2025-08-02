@@ -140,7 +140,7 @@ class AuthGate extends StatelessWidget {
               AuthStateChangeAction<UserCreated>((context, state) 
               {
                 // User just created an account, navigate to home screen
-                if (state.credential?.additionalUserInfo?.isNewUser == true) {
+                if (state.credential.additionalUserInfo?.isNewUser == true) {
                   final vm = Provider.of<MemoViewModel>(context, listen: false);
                   vm.addDefaultThemesWithCards();
                 }

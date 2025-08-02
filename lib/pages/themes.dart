@@ -64,9 +64,7 @@ class ThemesPage extends StatelessWidget {
                     color: Theme.of(context).cardColor,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(
-                          0.5,
-                        ), // Use withOpacity instead of withValues
+                        color: Colors.grey..withAlpha(128), // Use withOpacity instead of withValues
                         spreadRadius: 2,
                         blurRadius: 5,
                         offset: const Offset(

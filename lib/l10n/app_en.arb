@@ -1,5 +1,9 @@
 {
+  "@@locale": "en",
   "hello": "Hello",
+  "@hello": {},
   "signInFooter": "By signing in, you agree to our terms and conditions.",
-  "welcome": "Welcome to MemoCards!"
+  "@signInFooter": {},
+  "welcome": "Welcome to MemoCards!",
+  "@welcome": {}
 }
